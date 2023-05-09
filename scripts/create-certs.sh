@@ -54,7 +54,7 @@ generate_cert redis-client client
 #
 # copy CA certificate everywhere
 #
-for dir in redis/certs server/src/main/resources/certs client/src/main/resources/certs; do
+for dir in redis/certs books-server/src/main/resources/certs books-client/src/main/resources/certs; do
   cp certs/ca.crt ${dir}
 done
 
@@ -72,7 +72,7 @@ done
 #
 # copy certificates and private keys for the web server
 #
-for dir in server/src/main/resources/certs; do
+for dir in books-server/src/main/resources/certs; do
   cp certs/redis-client.* ${dir}
   cp certs/web-server.* ${dir}
   echo ""
@@ -83,7 +83,7 @@ done
 #
 # copy certificates and private keys for the web client
 #
-for dir in client/src/main/resources/certs; do
+for dir in books-client/src/main/resources/certs; do
   cp certs/web-client.* ${dir}
   echo ""
   echo "Client application certificates in '${dir}'"

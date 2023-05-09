@@ -9,5 +9,5 @@ pluginManagement {
 
 rootProject.name = 'spring-boot-ssl-demo'
 
-include 'server'
-include 'client'
+include 'books-server'
+include 'books-client'
