@@ -32,6 +32,8 @@ if ! command -v openssl &> /dev/null; then
     exit
 fi
 
+mkdir -p certs
+
 cat > certs/openssl.cnf <<_END_
 subjectAltName = @alt_names
 [alt_names]
@@ -55,6 +57,7 @@ generate_cert redis-client client
 # copy CA certificate everywhere
 #
 for dir in redis/certs books-server/src/main/resources/certs books-client/src/main/resources/certs; do
+  mkdir -p ${dir}
   cp certs/ca.crt ${dir}
 done
 
