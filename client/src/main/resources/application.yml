@@ -1,0 +1,26 @@
+spring:
+  main:
+    web-application-type: NONE
+
+client:
+  server-base-url: "http://localhost:8080"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "ssl"
+  ssl:
+    bundle:
+      pem:
+        web:
+          keystore:
+            certificate: "classpath:certs/web-client.crt"
+            private-key: "classpath:certs/web-client.key"
+          truststore:
+            certificate: "classpath:certs/ca.crt"
+
+client:
+  server-base-url: "https://localhost:8443"
+  ssl:
+    bundle: "web"

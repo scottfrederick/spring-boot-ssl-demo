@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  redis:
+    profiles: [ "default" ]
+    image: "docker.io/bitnami/redis:7.0"
+    container_name: "redis"
+    environment:
+      - "ALLOW_EMPTY_PASSWORD=yes"
+    ports:
+      - "6379:6379"
+  redis-ssl:
+    profiles: [ "ssl" ]
+    image: "docker.io/bitnami/redis:7.0"
+    container_name: "redis-ssl"
+    volumes:
+      - "../redis/certs:/opt/bitnami/redis/certs"
+    environment:
+      - "ALLOW_EMPTY_PASSWORD=yes"
+      - "REDIS_TLS_ENABLED=yes"
+      - "REDIS_TLS_CERT_FILE=/opt/bitnami/redis/certs/redis-server.crt"
+      - "REDIS_TLS_KEY_FILE=/opt/bitnami/redis/certs/redis-server.key"
+      - "REDIS_TLS_CA_FILE=/opt/bitnami/redis/certs/ca.crt"
+    ports:
+      - "6379:6379"

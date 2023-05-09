@@ -1,0 +1,13 @@
+pluginManagement {
+	repositories {
+		mavenLocal()
+		maven { url 'https://repo.spring.io/milestone' }
+		maven { url 'https://repo.spring.io/snapshot' }
+		gradlePluginPortal()
+	}
+}
+
+rootProject.name = 'spring-boot-ssl-demo'
+
+include 'server'
+include 'client'

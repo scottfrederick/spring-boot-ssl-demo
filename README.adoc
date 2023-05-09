@@ -1,0 +1,131 @@
+:spring-boot-docs: https://docs.spring.io/spring-boot/docs/3.1.0-SNAPSHOT/reference/htmlsingle
+
+# Securing Spring Boot applications with SSL/TLS
+:toc:
+
+This repository contains a sample of configuring Spring Boot client and server applications and a Redis server to use SSL/TLS for two-way (mutual) authentication.
+
+## Architecture
+
+There are two applications named `server` and `client` in this sample, each in their own modules.
+
+The server application is a web server providing a REST endpoint `/api/books` that returns a list of books from Redis using Spring Data Redis.
+
+The client application configures a `RestTemplate` and a `WebClient` for communicating with the server.
+This is done to show the SSL configuration for both types of REST clients.
+Each REST client is used to call the server endpoint and print the results to `stdout`.
+
+### Docker Compose
+
+When running the `server` application locally, a Redis server will be started automatically using {spring-boot-docs}/#features.docker-compose[Spring Boot's support for Docker Compose].
+
+The included link:server/docker-compose.yml[Docker Compose file] uses https://docs.docker.com/compose/profiles/[Docker Compose profiles] to start the Redis server without or with SSL configuration using `default` and `ssl` profiles.
+Docker Compose profiles are similar to Spring Boot profiles, but they work independently of each other.
+
+### SSL Bundles
+
+Secure SSL connections are configured for communication between the server application and Redis, and between the client and server applications.
+In the Spring Boot applications, this is done using the {spring-boot-docs}/#features.ssl[SSL bundles feature] to load and apply PEM certificates.
+
+For the `server` application, SSL bundles are defined and applied using link:server/src/main/resources/application.yml[properties in the `application.yml` file] to configure the Redis client connection and the web server.
+The web server is also configured to require client authentication.
+
+For the `client` application, an SSL bundle is defined using link:client/src/main/resources/application.yml[properties in the `application.yml` file] and applied by customizing the link:client/src/main/java/org/example/books/client/RestTemplateConfiguration.java[`RestTemplate`] and link:client/src/main/java/org/example/books/client/WebClientConfiguration.java[`WebClient`] using Spring Boot APIs.
+
+## Running the Sample Locally Without SSL
+
+The sample can be run without any SSL authentication to make sure everything is working in the simplest configuration.
+
+First, start the `server` application and the Redis database:
+
+[source,bash]
+----
+./gradlew :server:bootRun
+----
+
+When the server application is running and ready to accept connections, it should display a log messaging containing:
+
+[source]
+----
+... o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+----
+
+NOTE: If the server application is run using any other means (such as an IDE), make sure that the current working directory is the directory containing the `server/docker-compose.yml` file so that the Redis server is started automatically.
+
+Next, run the `client` application:
+
+[source,bash]
+----
+./gradlew :client:bootRun
+----
+
+The client application should run and exit, with output similar to the following:
+
+[source]
+----
+Attempting to connect to server with RestTemplate
+
+Successfully connected to server with RestTemplate and received response:
+Book[...]
+Book[...]
+...
+
+Attempting to connect to server with WebClient
+
+Successfully connected to server with WebClient and received response:
+Book[...]
+Book[...]
+...
+----
+
+## Running the Sample Locally With SSL
+
+First, generate a root certificate authority and a set of certificates from the CA.
+The Redis server, `server` application, and `client` application will each get their own certificates that identify them to the other components that they need to communicate with.
+
+[source,bash]
+----
+scripts/create-certs.sh
+----
+
+Next, start the `server` application and the Redis database with a Spring Boot profile that modifies the Spring Boot application configuration and the Docker Compose configuration for Redis:
+
+[source,bash]
+----
+./gradlew :server:bootRun --args='--spring.profiles.active=ssl'
+----
+
+When the server application is running and ready to accept connections, it should display a log messaging containing:
+
+[source]
+----
+... o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+----
+
+NOTE: If the server application is run using any other means (such as an IDE), make sure that the current working directory is the directory containing the `server/docker-compose.yml` file so that the Redis server is started automatically.
+
+Next, run the `client` application with the same Spring Boot profile:
+
+[source,bash]
+----
+./gradlew :client:bootRun --args='--spring.profiles.active=ssl'
+----
+
+The client application should run and exit, with output similar to the following:
+
+[source]
+----
+Attempting to connect to server with RestTemplate
+
+Successfully connected to server with RestTemplate and received response:
+Book[...]
+Book[...]
+...
+
+Attempting to connect to server with WebClient
+
+Successfully connected to server with WebClient and received response:
+Book[...]
+Book[...]
+...
+----
