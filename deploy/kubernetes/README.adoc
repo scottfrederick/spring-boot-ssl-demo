@@ -1,0 +1,71 @@
+:spring-boot-docs: https://docs.spring.io/spring-boot/docs/3.1.0-SNAPSHOT/reference/htmlsingle
+
+= Deploying to Kubernetes
+:toc:
+
+This directory contains artifacts for deploying the Redis server, `books-server` application, and `books-client` application to a Kubernetes cluster.
+
+All commands in these instructions should be run from the root of the project.
+
+== Prerequisites
+
+These instructions have been developed and tested using https://kind.sigs.k8s.io/[kind] with a https://kind.sigs.k8s.io/docs/user/local-registry/[local OCI image registry] and https://kind.sigs.k8s.io/docs/user/ingress/[ingress] configured. Other Kubernetes cluster are likely to work also.
+
+To use an OCI image registry other than a local registry in the cluster (with a registry address `localhost:5001`), you will need to modify the repository in the `build.gradle` files for the link:../../books-server/build.gradle[`books-server`] and link:../../books-client/build.gradle[`books-client`] subprojects.
+
+For simplicity, everything is deployed to the default namespace.
+
+These CLIs must be installed locally:
+
+* https://kubernetes.io/docs/tasks/tools/install-kubectl/[kubectl]
+* https://skaffold.dev/docs/install/[skaffold]
+
+== Deploying Without SSL
+
+The sample can be run without any SSL authentication to make sure everything can be deployed in the simplest configuration.
+
+The deployment can be performed with a single command using `skaffold`:
+
+[source,bash]
+----
+skaffold run -f deploy/kubernetes/skaffold.yaml
+----
+
+This will build images for the two applications, then deploy Redis and the two applications using the link:default[`default` manifests].
+If everything starts successfully and ingress is properly configured, you can test the deployment using the `books-client` application by browsing to `http://localhost/books` or with the following command:
+
+[source,bash]
+----
+curl localhost/books/books
+----
+
+== Deploying With SSL
+
+Using this sample with SSL certificate requires https://cert-manager.io/docs/[`cert-manager`] to be installed in the Kubernetes cluster.
+`cert-manager` is used to generate a self-signed root certificate authority and certificates for each of the components.
+
+The deployment can be performed with a single command using `skaffold` with an `ssl` profile:
+
+[source,bash]
+----
+skaffold run -p ssl -f deploy/kubernetes/skaffold.yaml
+----
+
+This will build images for the two applications, create the certificates and store them in secrets, then deploy Redis and the two applications using the link:ssl[`ssl` manifests].
+If everything starts successfully and ingress is properly configured, you can test the deployment using the `books-client` application by browsing to `http://localhost/books` or with the following command:
+
+[source,bash]
+----
+curl localhost/books/books
+----
+
+== Troubleshooting
+
+If the client application does not return the expected results, you can view the logs of each of the components with these commands:
+
+[source,bash]
+----
+kubectl logs -l service=redis --tail=150
+kubectl logs -l app=books-server --tail=150
+kubectl logs -l app=books-client --tail=150
+----

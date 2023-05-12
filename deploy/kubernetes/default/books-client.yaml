@@ -1,0 +1,72 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: books-client-config
+data:
+  application.yml: |
+    client:
+      server-base-url: "http://books-server.default.svc.cluster.local:8080"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: books-client
+  name: books-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: books-client
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: books-client
+    spec:
+      containers:
+      - image: localhost:5001/books-client:0.0.1-SNAPSHOT
+        name: books-client
+        volumeMounts:
+          - name: books-client-config
+            mountPath: /workspace/config
+            readOnly: true
+        resources: {}
+      volumes:
+        - name: books-client-config
+          configMap:
+            name: books-client-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: books-client
+  name: books-client
+spec:
+  ports:
+  - port: 8080
+  selector:
+    app: books-client
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: books-client
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /books(/|$)(.*)
+            backend:
+              service:
+                name: books-client
+                port:
+                  number: 8080

@@ -1,0 +1,139 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: redis-client-certificate
+spec:
+  secretName: redis-client-certificate
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+  subject:
+    organizations:
+      - "Spring Boot SSL Sample"
+  dnsNames:
+    - "redis.default.svc.cluster.local"
+  usages:
+    - client auth
+    - key encipherment
+    - digital signature
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: books-server-certificate
+spec:
+  secretName: books-server-certificate
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+  subject:
+    organizations:
+      - "Spring Boot SSL Sample"
+  dnsNames:
+    - "books-server.default.svc.cluster.local"
+  usages:
+    - server auth
+    - key encipherment
+    - digital signature
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: books-server-config
+data:
+  application.yml: |
+    spring:
+      ssl:
+        bundle:
+          pem:
+            web:
+              keystore:
+                certificate: "/web-certs/tls.crt"
+                private-key: "/web-certs/tls.key"
+              trust-store:
+                certificate: "/web-certs/ca.crt"
+            redis:
+              keystore:
+                certificate: "/redis-certs/tls.crt"
+                private-key: "/redis-certs/tls.key"
+              trust-store:
+                certificate: "/redis-certs/ca.crt"
+      data:
+        redis:
+          host: "redis.default.svc.cluster.local"
+          ssl:
+            bundle: "redis"
+    server:
+      port: "8443"
+      ssl:
+        bundle: "web"
+      
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: books-server
+  name: books-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: books-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: books-server
+    spec:
+      containers:
+      - image: localhost:5001/books-server:0.0.1-SNAPSHOT
+        name: books-server
+        volumeMounts:
+          - name: books-server-config
+            mountPath: /workspace/config
+            readOnly: true
+          - name: books-server-certs
+            mountPath: /web-certs
+            readOnly: true
+          - name: redis-client-certs
+            mountPath: /redis-certs
+            readOnly: true
+        resources: {}
+      volumes:
+        - name: books-server-config
+          configMap:
+            name: books-server-config
+        - name: books-server-certs
+          secret:
+            secretName: books-server-certificate
+        - name: redis-client-certs
+          secret:
+            secretName: redis-client-certificate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: books-server
+  name: books-server
+spec:
+  ports:
+  - port: 8443
+    targetPort: 8443
+    protocol: TCP
+  selector:
+    app: books-server
+  type: ClusterIP

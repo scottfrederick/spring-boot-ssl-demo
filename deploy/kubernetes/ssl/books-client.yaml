@@ -1,0 +1,117 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: books-client-certificate
+spec:
+  secretName: books-client-certificate
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+  subject:
+    organizations:
+      - "Spring Boot SSL Sample"
+  dnsNames:
+    - "books-server.default.svc.cluster.local"
+  usages:
+    - client auth
+    - key encipherment
+    - digital signature
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: books-client-config
+data:
+  application.yml: |
+    spring:
+      ssl:
+        bundle:
+          pem:
+            web:
+              keystore:
+                certificate: "/web-certs/tls.crt"
+                private-key: "/web-certs/tls.key"
+              truststore:
+                certificate: "/web-certs/ca.crt"
+    client:
+      server-base-url: "https://books-server.default.svc.cluster.local:8443"
+      ssl:
+        bundle: "web"
+        
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: books-client
+  name: books-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: books-client
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: books-client
+    spec:
+      containers:
+      - image: localhost:5001/books-client:0.0.1-SNAPSHOT
+        name: books-client
+        env:
+          - name: "SPRING_PROFILES_ACTIVE"
+            value: "ssl"
+        volumeMounts:
+          - name: books-client-config
+            mountPath: /workspace/config
+            readOnly: true
+          - name: books-client-certs
+            mountPath: /web-certs
+            readOnly: true
+        resources: {}
+      volumes:
+        - name: books-client-config
+          configMap:
+            name: books-client-config
+        - name: books-client-certs
+          secret:
+            secretName: books-client-certificate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: books-client
+  name: books-client
+spec:
+  ports:
+  - port: 8080
+  selector:
+    app: books-client
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: books-client
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /books(/|$)(.*)
+            backend:
+              service:
+                name: books-client
+                port:
+                  number: 8080

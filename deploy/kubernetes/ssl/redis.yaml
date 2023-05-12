@@ -1,0 +1,78 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: redis-server-certificate
+spec:
+  secretName: redis-server-certificate
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 4096
+  subject:
+    organizations:
+      - "Spring Boot SSL Sample"
+  dnsNames:
+    - "redis.default.svc.cluster.local"
+  usages:
+    - server auth
+    - key encipherment
+    - digital signature
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-ssl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: redis
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service: redis
+    spec:
+      containers:
+        - image: docker.io/bitnami/redis:7.0
+          name: redis-ssl
+          env:
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "yes"
+            - name: REDIS_TLS_ENABLED
+              value: "yes"
+            - name: REDIS_TLS_CERT_FILE
+              value: /redis-certs/tls.crt
+            - name: REDIS_TLS_KEY_FILE
+              value: /redis-certs/tls.key
+            - name: REDIS_TLS_CA_FILE
+              value: /redis-certs/ca.crt
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: redis-server-certs
+              mountPath: /redis-certs
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: redis-server-certs
+          secret:
+            secretName: redis-server-certificate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  selector:
+    service: redis
+  ports:
+    - name: "redis-client"
+      port: 6379
+      targetPort: 6379

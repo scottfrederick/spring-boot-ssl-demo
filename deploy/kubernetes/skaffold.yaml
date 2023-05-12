@@ -1,0 +1,41 @@
+apiVersion: skaffold/v2beta26
+kind: Config
+metadata:
+  name: spring-boot-ssl-sample
+build:
+  tagPolicy:
+    customTemplate:
+      template: "0.0.1-SNAPSHOT"
+  artifacts:
+    - image: books-server
+      custom:
+        buildCommand: "./gradlew :books-server:bootBuildImage -x test"
+        dependencies:
+          paths:
+            - "books-server/src"
+            - "books-server/build.gradle"
+    - image: books-client
+      custom:
+        buildCommand: "./gradlew :books-client:bootBuildImage -x test"
+        dependencies:
+          paths:
+            - "books-client/src"
+            - "books-client/build.gradle"
+
+deploy:
+  kubectl:
+    manifests:
+      - "deploy/kubernetes/default/redis.yaml"
+      - "deploy/kubernetes/default/books-server.yaml"
+      - "deploy/kubernetes/default/books-client.yaml"
+
+profiles:
+  - name: ssl
+    deploy:
+      kubectl:
+        manifests:
+          - "deploy/kubernetes/ssl/ca-certs.yaml"
+          - "deploy/kubernetes/ssl/redis.yaml"
+          - "deploy/kubernetes/ssl/books-server.yaml"
+          - "deploy/kubernetes/ssl/books-client.yaml"
+
