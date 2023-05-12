@@ -17,6 +17,10 @@ class BookDataLoader implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) {
+		if (repository.count() > 0) {
+			return;
+		}
+
 		List<Book> books = List.of(
 				new Book("Spring in Action", List.of("Craig Walls"), "Manning"),
 				new Book("Spring Boot in Action", List.of("Craig Walls"), "Manning"),

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<title>Books</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+</head>
+<body>
+<div th:switch="${books}" class="container my-5">
+	<div class="row">
+		<div class="col-md-12">
+			<h2 th:case="null">No books listed</h2>
+			<div th:case="*">
+				<h2>Books</h2>
+				<table class="table table-striped table-responsive-md">
+					<thead class="table-header">
+					<tr>
+						<th>Title</th>
+						<th>Authors</th>
+						<th>Publisher</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr th:each="book : ${books}">
+						<td th:text="${book.title}"></td>
+						<td>
+							<ul class="list-unstyled" th:each="author : ${book.authors}">
+								<li th:text="${author}"></li>
+							</ul>
+						</td>
+						<td th:text="${book.publisher}"></td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

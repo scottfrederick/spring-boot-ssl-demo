@@ -38,32 +38,41 @@ public class BooksClientApplication {
 	private void retrieveWithRestTemplate(RestTemplate restTemplate) {
 		System.out.println();
 		System.out.println("Attempting to connect to server with RestTemplate");
-		ResponseEntity<List<Book>> response = restTemplate.exchange(baseUrl +
-				"/api/books", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
-		});
-		List<Book> books = response.getBody();
-		System.out.println();
-		System.out.println("Successfully connected to server with RestTemplate and received response:");
-		System.out.println(StringUtils.collectionToDelimitedString(books, "\n"));
+		try {
+			ResponseEntity<List<Book>> response = restTemplate.exchange(baseUrl + "/api/books",
+					HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+			List<Book> books = response.getBody();
+			System.out.println();
+			System.out.println("Successfully connected to server with RestTemplate and received response:");
+			System.out.println(StringUtils.collectionToDelimitedString(books, "\n"));
+		} catch (Exception ex) {
+			System.out.println();
+			System.out.println("Error connecting to server: " + ex.getMessage());
+		}
 	}
 
 	private void retrieveWithWebClient(WebClient webClient) {
 		System.out.println();
 		System.out.println("Attempting to connect to server with WebClient");
-		Mono<List<Book>> result = webClient.get()
-				.uri(baseUrl + "/api/books")
-				.exchangeToMono((response) -> {
-					if (response.statusCode().equals(HttpStatus.OK)) {
-						return response.bodyToMono(new ParameterizedTypeReference<>() {
-						});
-					} else {
-						return response.createError();
-					}
-				});
-		List<Book> books = result.block();
-		System.out.println();
-		System.out.println("Successfully connected to server with WebClient and received response:");
-		System.out.println(StringUtils.collectionToDelimitedString(books, "\n"));
+		try {
+			Mono<List<Book>> result = webClient.get()
+					.uri(baseUrl + "/api/books")
+					.exchangeToMono((response) -> {
+						if (response.statusCode().equals(HttpStatus.OK)) {
+							return response.bodyToMono(new ParameterizedTypeReference<>() {});
+						} else {
+							return response.createError();
+						}
+					});
+			List<Book> books = result.block();
+			System.out.println();
+			System.out.println("Successfully connected to server with WebClient and received response:");
+			System.out.println(StringUtils.collectionToDelimitedString(books, "\n"));
+		} catch (Exception ex) {
+			System.out.println();
+			System.out.println("Error connecting to server: " + ex.getMessage());
+		}
+
 	}
 
 }

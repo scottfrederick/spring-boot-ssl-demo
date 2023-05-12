@@ -1,11 +1,11 @@
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/3.1.0-SNAPSHOT/reference/htmlsingle
 
-# Securing Spring Boot applications with SSL/TLS
+= Securing Spring Boot applications with SSL/TLS
 :toc:
 
 This repository contains a sample of configuring Spring Boot client and server applications and a Redis server to use SSL/TLS for two-way (mutual) authentication.
 
-## Architecture
+== Architecture
 
 There are two applications named `books-server` and `books-client` in this sample, each in their own modules.
 
@@ -15,14 +15,14 @@ The client application configures a `RestTemplate` and a `WebClient` for communi
 This is done to show the SSL configuration for both types of REST clients.
 Each REST client is used to call the server endpoint and print the results to `stdout`.
 
-### Docker Compose
+=== Docker Compose
 
 When running the server application locally, a Redis server will be started automatically using {spring-boot-docs}/#features.docker-compose[Spring Boot's support for Docker Compose].
 
 The included link:books-server/docker-compose.yml[Docker Compose file] uses https://docs.docker.com/compose/profiles/[Docker Compose profiles] to start the Redis server without or with SSL configuration using `default` and `ssl` profiles.
 Docker Compose profiles are similar to Spring Boot profiles, but they work independently of each other.
 
-### SSL Bundles
+=== SSL Bundles
 
 Secure SSL connections are configured for communication between the server application and Redis, and between the client and server applications.
 In the Spring Boot applications, this is done using the {spring-boot-docs}/#features.ssl[SSL bundles feature] to load and apply PEM certificates.
@@ -32,7 +32,7 @@ The web server is also configured to require client authentication.
 
 For the `books-client` application, an SSL bundle is defined using link:books-client/src/main/resources/application.yml[properties in the `application.yml` file] and applied by customizing the link:books-client/src/main/java/org/example/books/client/RestTemplateConfiguration.java[`RestTemplate`] and link:books-client/src/main/java/org/example/books/client/WebClientConfiguration.java[`WebClient`] using Spring Boot APIs.
 
-## Running the Sample Locally Without SSL
+== Running the Sample Locally Without SSL
 
 The sample can be run without any SSL authentication to make sure everything is working in the simplest configuration.
 
@@ -59,7 +59,7 @@ Next, run the `books-client` application:
 ./gradlew :books-client:bootRun
 ----
 
-The client application should run and exit, with output similar to the following:
+The client application should start, with output similar to the following:
 
 [source]
 ----
@@ -78,7 +78,9 @@ Book[...]
 ...
 ----
 
-## Running the Sample Locally With SSL
+The list of books from the server can be viewed as JSON at `http://localhost:8080/books` or as an HTML page at `http://localhost:8080`.
+
+== Running the Sample Locally With SSL
 
 First, generate a root certificate authority and a set of certificates from the CA.
 The Redis server, `books-server` application, and `books-client` application will each get their own certificates that identify them to the other components that they need to communicate with.
@@ -111,7 +113,7 @@ Next, run the `books-client` application with the same Spring Boot profile:
 ./gradlew :books-client:bootRun --args='--spring.profiles.active=ssl'
 ----
 
-The client application should run and exit, with output similar to the following:
+The client application should start, with output similar to the following:
 
 [source]
 ----
@@ -129,3 +131,5 @@ Book[...]
 Book[...]
 ...
 ----
+
+The list of books from the server can be viewed as JSON at `http://localhost:8080/books` or as an HTML page at `http://localhost:8080`.

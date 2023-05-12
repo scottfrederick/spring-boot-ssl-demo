@@ -1,9 +1,9 @@
 spring:
   main:
-    web-application-type: NONE
+    web-application-type: SERVLET
 
 client:
-  server-base-url: "http://localhost:8080"
+  server-base-url: "http://localhost:8081"
 
 ---
 spring:
