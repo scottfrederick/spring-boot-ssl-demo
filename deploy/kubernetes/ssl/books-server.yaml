@@ -61,13 +61,13 @@ data:
               keystore:
                 certificate: "/web-certs/tls.crt"
                 private-key: "/web-certs/tls.key"
-              trust-store:
+              truststore:
                 certificate: "/web-certs/ca.crt"
             redis:
               keystore:
                 certificate: "/redis-certs/tls.crt"
                 private-key: "/redis-certs/tls.key"
-              trust-store:
+              truststore:
                 certificate: "/redis-certs/ca.crt"
       data:
         redis:

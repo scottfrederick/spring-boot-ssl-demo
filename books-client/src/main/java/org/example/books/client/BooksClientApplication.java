@@ -20,7 +20,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @SpringBootApplication
 public class BooksClientApplication {
 
-	@Value("${client.server-base-url}")
+	@Value("${app.server-base-url}")
 	private String baseUrl;
 
 	public static void main(String[] args) {
@@ -37,7 +37,7 @@ public class BooksClientApplication {
 
 	private void retrieveWithRestTemplate(RestTemplate restTemplate) {
 		System.out.println();
-		System.out.println("Attempting to connect to server with RestTemplate");
+		System.out.printf("Attempting to connect to server at '%s' with RestTemplate%n", baseUrl);
 		try {
 			ResponseEntity<List<Book>> response = restTemplate.exchange(baseUrl + "/api/books",
 					HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
@@ -53,7 +53,7 @@ public class BooksClientApplication {
 
 	private void retrieveWithWebClient(WebClient webClient) {
 		System.out.println();
-		System.out.println("Attempting to connect to server with WebClient");
+		System.out.printf("Attempting to connect to server at '%s' with WebClient%n", baseUrl);
 		try {
 			Mono<List<Book>> result = webClient.get()
 					.uri(baseUrl + "/api/books")

@@ -19,7 +19,7 @@ public class WebClientConfiguration {
 	@Bean
 	@Profile("ssl")
 	public WebClient sslWebClient(WebClient.Builder builder, WebClientSsl ssl,
-								  @Value("${client.ssl.bundle}") String sslBundle) {
+								  @Value("${app.ssl.bundle}") String sslBundle) {
 		return builder.apply(ssl.fromBundle(sslBundle)).build();
 	}
 

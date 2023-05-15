@@ -21,7 +21,7 @@ public class RestTemplateConfiguration {
 	@Bean
 	@Profile("ssl")
 	public RestTemplate sslRestTemplate(RestTemplateBuilder builder, SslBundles sslBundles,
-										@Value("${client.ssl.bundle}") String sslBundleName) {
+										@Value("${app.ssl.bundle}") String sslBundleName) {
 		SslBundle sslBundle = sslBundles.getBundle(sslBundleName);
 		return builder.setSslBundle(sslBundle).build();
 	}

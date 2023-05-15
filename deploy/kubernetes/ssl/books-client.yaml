@@ -39,7 +39,7 @@ data:
                 private-key: "/web-certs/tls.key"
               truststore:
                 certificate: "/web-certs/ca.crt"
-    client:
+    app:
       server-base-url: "https://books-server.default.svc.cluster.local:8443"
       ssl:
         bundle: "web"

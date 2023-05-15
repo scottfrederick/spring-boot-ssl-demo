@@ -5,7 +5,7 @@ metadata:
   name: books-client-config
 data:
   application.yml: |
-    client:
+    app:
       server-base-url: "http://books-server.default.svc.cluster.local:8080"
 
 ---

@@ -15,7 +15,7 @@ public class BookApiController {
 
 	private final RestTemplate restTemplate;
 
-	@Value("${client.server-base-url}")
+	@Value("${app.server-base-url}")
 	private String baseUrl;
 
 	public BookApiController(RestTemplate restTemplate) {
