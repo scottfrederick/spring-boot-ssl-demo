@@ -1,6 +1,5 @@
 package org.example.books.client;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -14,16 +13,15 @@ public class RestTemplateConfiguration {
 
 	@Bean
 	@Profile("default")
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		return builder.build();
+	public RestTemplate restTemplate(RestTemplateBuilder builder, AppProperties app) {
+		return builder.rootUri(app.getServerBaseUrl()).build();
 	}
 
 	@Bean
 	@Profile("ssl")
-	public RestTemplate sslRestTemplate(RestTemplateBuilder builder, SslBundles sslBundles,
-										@Value("${app.ssl.bundle}") String sslBundleName) {
-		SslBundle sslBundle = sslBundles.getBundle(sslBundleName);
-		return builder.setSslBundle(sslBundle).build();
+	public RestTemplate sslRestTemplate(RestTemplateBuilder builder, SslBundles sslBundles, AppProperties app) {
+		SslBundle sslBundle = sslBundles.getBundle(app.getSsl().getBundle());
+		return builder.rootUri(app.getServerBaseUrl()).setSslBundle(sslBundle).build();
 	}
 
 }

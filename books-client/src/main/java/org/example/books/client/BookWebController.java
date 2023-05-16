@@ -2,7 +2,6 @@ package org.example.books.client;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +15,13 @@ public class BookWebController {
 
 	private final RestTemplate restTemplate;
 
-	@Value("${app.server-base-url}")
-	private String baseUrl;
-
 	public BookWebController(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
 
 	@GetMapping("/")
 	public String index(Model model) {
-		ResponseEntity<List<Book>> response = restTemplate.exchange(baseUrl + "/api/books",
+		ResponseEntity<List<Book>> response = restTemplate.exchange("/api/books",
 				HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
 		model.addAttribute("books", response.getBody());
 		return "books";

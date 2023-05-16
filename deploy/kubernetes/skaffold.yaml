@@ -22,20 +22,22 @@ build:
             - "books-client/src"
             - "books-client/build.gradle"
 
+manifests:
+  rawYaml:
+    - "deploy/kubernetes/default/redis.yaml"
+    - "deploy/kubernetes/default/books-server.yaml"
+    - "deploy/kubernetes/default/books-client.yaml"
 deploy:
-  kubectl:
-    manifests:
-      - "deploy/kubernetes/default/redis.yaml"
-      - "deploy/kubernetes/default/books-server.yaml"
-      - "deploy/kubernetes/default/books-client.yaml"
+  kubectl: {}
 
 profiles:
   - name: ssl
+    manifests:
+      rawYaml:
+        - "deploy/kubernetes/ssl/ca-certs.yaml"
+        - "deploy/kubernetes/ssl/redis.yaml"
+        - "deploy/kubernetes/ssl/books-server.yaml"
+        - "deploy/kubernetes/ssl/books-client.yaml"
     deploy:
-      kubectl:
-        manifests:
-          - "deploy/kubernetes/ssl/ca-certs.yaml"
-          - "deploy/kubernetes/ssl/redis.yaml"
-          - "deploy/kubernetes/ssl/books-server.yaml"
-          - "deploy/kubernetes/ssl/books-client.yaml"
+      kubectl: {}
 

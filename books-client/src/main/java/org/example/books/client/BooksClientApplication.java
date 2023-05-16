@@ -4,10 +4,10 @@ import java.util.List;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -18,10 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @SpringBootApplication
+@EnableConfigurationProperties(AppProperties.class)
 public class BooksClientApplication {
-
-	@Value("${app.server-base-url}")
-	private String baseUrl;
 
 	public static void main(String[] args) {
 		SpringApplication.run(BooksClientApplication.class, args);
@@ -37,9 +35,9 @@ public class BooksClientApplication {
 
 	private void retrieveWithRestTemplate(RestTemplate restTemplate) {
 		System.out.println();
-		System.out.printf("Attempting to connect to server at '%s' with RestTemplate%n", baseUrl);
+		System.out.println("Attempting to connect to server with RestTemplate");
 		try {
-			ResponseEntity<List<Book>> response = restTemplate.exchange(baseUrl + "/api/books",
+			ResponseEntity<List<Book>> response = restTemplate.exchange("/api/books",
 					HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
 			List<Book> books = response.getBody();
 			System.out.println();
@@ -53,10 +51,10 @@ public class BooksClientApplication {
 
 	private void retrieveWithWebClient(WebClient webClient) {
 		System.out.println();
-		System.out.printf("Attempting to connect to server at '%s' with WebClient%n", baseUrl);
+		System.out.println("Attempting to connect to server with WebClient");
 		try {
 			Mono<List<Book>> result = webClient.get()
-					.uri(baseUrl + "/api/books")
+					.uri("/api/books")
 					.exchangeToMono((response) -> {
 						if (response.statusCode().equals(HttpStatus.OK)) {
 							return response.bodyToMono(new ParameterizedTypeReference<>() {});
