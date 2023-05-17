@@ -7,6 +7,8 @@ spring:
 server:
   port: 8081
 
+cert-base-path: "classpath:"
+
 ---
 spring:
   config:
@@ -25,19 +27,20 @@ spring:
       pem:
         web:
           keystore:
-            certificate: "classpath:certs/web-server.crt"
-            private-key: "classpath:certs/web-server.key"
+            certificate: "${cert-base-path}web-server-certs/tls.crt"
+            private-key: "${cert-base-path}web-server-certs/tls.key"
           truststore:
-            certificate: "classpath:certs/ca.crt"
+            certificate: "${cert-base-path}web-server-certs/ca.crt"
         redis:
           keystore:
-            certificate: "classpath:certs/redis-client.crt"
-            private-key: "classpath:certs/redis-client.key"
+            certificate: "${cert-base-path}redis-client-certs/tls.crt"
+            private-key: "${cert-base-path}redis-client-certs/tls.key"
           truststore:
-            certificate: "classpath:certs/ca.crt"
+            certificate: "${cert-base-path}redis-client-certs/ca.crt"
 
 server:
   port: 8443
   ssl:
     bundle: "web"
     client-auth: NEED
+

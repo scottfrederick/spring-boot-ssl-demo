@@ -5,6 +5,8 @@ spring:
 app:
   server-base-url: "http://localhost:8081"
 
+cert-base-path: "classpath:"
+
 ---
 spring:
   config:
@@ -15,10 +17,10 @@ spring:
       pem:
         web:
           keystore:
-            certificate: "classpath:certs/web-client.crt"
-            private-key: "classpath:certs/web-client.key"
+            certificate: "${cert-base-path}web-client-certs/tls.crt"
+            private-key: "${cert-base-path}web-client-certs/tls.key"
           truststore:
-            certificate: "classpath:certs/ca.crt"
+            certificate: "${cert-base-path}web-client-certs/ca.crt"
 
 app:
   server-base-url: "https://localhost:8443"

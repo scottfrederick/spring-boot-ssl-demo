@@ -54,31 +54,12 @@ metadata:
 data:
   application.yml: |
     spring:
-      ssl:
-        bundle:
-          pem:
-            web:
-              keystore:
-                certificate: "/web-certs/tls.crt"
-                private-key: "/web-certs/tls.key"
-              truststore:
-                certificate: "/web-certs/ca.crt"
-            redis:
-              keystore:
-                certificate: "/redis-certs/tls.crt"
-                private-key: "/redis-certs/tls.key"
-              truststore:
-                certificate: "/redis-certs/ca.crt"
       data:
         redis:
           host: "redis.default.svc.cluster.local"
-          ssl:
-            bundle: "redis"
-    server:
-      port: "8443"
-      ssl:
-        bundle: "web"
-      
+    cert-base-path: "/"
+    
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -100,15 +81,18 @@ spec:
       containers:
       - image: localhost:5001/books-server:0.0.1-SNAPSHOT
         name: books-server
+        env:
+          - name: "SPRING_PROFILES_ACTIVE"
+            value: "ssl"
         volumeMounts:
           - name: books-server-config
             mountPath: /workspace/config
             readOnly: true
           - name: books-server-certs
-            mountPath: /web-certs
+            mountPath: /web-server-certs
             readOnly: true
           - name: redis-client-certs
-            mountPath: /redis-certs
+            mountPath: /redis-client-certs
             readOnly: true
         resources: {}
       volumes:

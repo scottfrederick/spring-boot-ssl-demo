@@ -29,21 +29,11 @@ metadata:
   name: books-client-config
 data:
   application.yml: |
-    spring:
-      ssl:
-        bundle:
-          pem:
-            web:
-              keystore:
-                certificate: "/web-certs/tls.crt"
-                private-key: "/web-certs/tls.key"
-              truststore:
-                certificate: "/web-certs/ca.crt"
     app:
       server-base-url: "https://books-server.default.svc.cluster.local:8443"
-      ssl:
-        bundle: "web"
-        
+    cert-base-path: "/"
+
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -73,7 +63,7 @@ spec:
             mountPath: /workspace/config
             readOnly: true
           - name: books-client-certs
-            mountPath: /web-certs
+            mountPath: /web-client-certs
             readOnly: true
         resources: {}
       volumes:

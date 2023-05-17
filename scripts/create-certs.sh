@@ -1,5 +1,23 @@
 #!/bin/bash
 
+create_ssl_config() {
+  mkdir -p certs
+
+  cat > certs/openssl.cnf <<_END_
+  subjectAltName = @alt_names
+  [alt_names]
+  DNS.1 = example.com
+  DNS.2 = localhost
+  [ server_cert ]
+  keyUsage = digitalSignature, keyEncipherment
+  nsCertType = server
+  [ client_cert ]
+  keyUsage = digitalSignature, keyEncipherment
+  nsCertType = client
+_END_
+
+}
+
 generate_ca_cert() {
   openssl genrsa -out certs/ca.key 4096
   openssl req -key certs/ca.key -out certs/ca.crt \
@@ -9,11 +27,13 @@ generate_ca_cert() {
 }
 
 generate_cert() {
-    local name=$1
+    local location=$1
     local type=$2
 
-    local keyfile=certs/${name}.key
-    local certfile=certs/${name}.crt
+    local keyfile=${location}/tls.key
+    local certfile=${location}/tls.crt
+
+    mkdir -p ${location}
 
     openssl genrsa -out ${keyfile} 2048
     openssl req -key ${keyfile} \
@@ -32,63 +52,23 @@ if ! command -v openssl &> /dev/null; then
     exit
 fi
 
-mkdir -p certs
-
-cat > certs/openssl.cnf <<_END_
-subjectAltName = @alt_names
-[alt_names]
-DNS.1 = example.com
-DNS.2 = localhost
-[ server_cert ]
-keyUsage = digitalSignature, keyEncipherment
-nsCertType = server
-[ client_cert ]
-keyUsage = digitalSignature, keyEncipherment
-nsCertType = client
-_END_
-
+create_ssl_config
 generate_ca_cert
-generate_cert web-server server
-generate_cert web-client client
-generate_cert redis-server server
-generate_cert redis-client client
+generate_cert redis/redis-server-certs server
+generate_cert books-server/src/main/resources/redis-client-certs client
+generate_cert books-server/src/main/resources/web-server-certs server
+generate_cert books-client/src/main/resources/web-client-certs client
 
 #
 # copy CA certificate everywhere
 #
-for dir in redis/certs books-server/src/main/resources/certs books-client/src/main/resources/certs; do
-  mkdir -p ${dir}
+for dir in redis/redis-server-certs books-server/src/main/resources/redis-client-certs books-server/src/main/resources/web-server-certs books-client/src/main/resources/web-client-certs; do
   cp certs/ca.crt ${dir}
-done
-
-#
-# copy certificates and private keys for the redis server
-#
-for dir in redis/certs; do
-  cp certs/redis-server.* ${dir}
-  chmod go+r ${dir}/redis-server.key
   echo ""
-  echo "Redis server certificates in '${dir}'"
+  echo "Certificates in '${dir}'"
   ls -l ${dir}
 done
 
-#
-# copy certificates and private keys for the web server
-#
-for dir in books-server/src/main/resources/certs; do
-  cp certs/redis-client.* ${dir}
-  cp certs/web-server.* ${dir}
-  echo ""
-  echo "Server application certificates in '${dir}'"
-  ls -l ${dir}
-done
-
-#
-# copy certificates and private keys for the web client
-#
-for dir in books-client/src/main/resources/certs; do
-  cp certs/web-client.* ${dir}
-  echo ""
-  echo "Client application certificates in '${dir}'"
-  ls -l ${dir}
+for dir in redis/redis-server-certs; do
+  chmod go+r ${dir}/tls.key
 done
