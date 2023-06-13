@@ -1,4 +1,4 @@
-:spring-boot-docs: https://docs.spring.io/spring-boot/docs/3.1.0-SNAPSHOT/reference/htmlsingle
+:spring-boot-docs: https://docs.spring.io/spring-boot/docs/3.1.x/reference/htmlsingle
 
 = Securing Spring Boot applications with SSL/TLS
 :toc:
@@ -43,11 +43,20 @@ First, start the `books-server` application and the Redis database:
 ./gradlew :books-server:bootRun
 ----
 
-When the server application is running and ready to accept connections, it should display a log messaging containing:
+When the server application is running and ready to accept connections, it should display log messages containing text similar to this example:
 
 [source]
 ----
-... o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+...
+... o.s.b.d.c.l.DockerComposeLifecycleManager : Using Docker Compose file '/home/user/projects/spring-boot-ssl-demo/books-server/docker-compose.yml'
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis  Creating
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis  Created
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis  Starting
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis  Started
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis  Waiting
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis  Healthy
+...
+... o.example.books.server.BooksApplication  : Started BooksApplication in 2.0 seconds (process running for 2.2)
 ----
 
 NOTE: If the server application is run using any other means (such as an IDE), make sure that the current working directory is the directory containing the `books-server/docker-compose.yml` file so that the Redis server is started automatically.
@@ -82,6 +91,9 @@ The list of books from the server can be viewed as JSON at `http://localhost:808
 
 == Running the Sample Locally With SSL
 
+When running these samples locally, the https://www.openssl.org/[`openssl` toolkit] will be used to generate certificates using a self-signed certificate authority.
+`openssl` must be installed before following the instructions below.
+
 First, generate a root certificate authority and a set of certificates from the CA.
 The Redis server, `books-server` application, and `books-client` application will each get their own certificates that identify them to the other components that they need to communicate with.
 
@@ -97,11 +109,20 @@ Next, start the `books-server` application and the Redis database with a Spring 
 ./gradlew :books-server:bootRun --args='--spring.profiles.active=ssl'
 ----
 
-When the server application is running and ready to accept connections, it should display a log messaging containing:
+When the server application is running and ready to accept connections, it should display log messages containing text similar to this example:
 
 [source]
 ----
-... o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+...
+... o.s.b.d.c.l.DockerComposeLifecycleManager : Using Docker Compose file '/home/user/projects/spring-boot-ssl-demo/books-server/docker-compose.yml'
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis-ssl  Creating
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis-ssl  Created
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis-ssl  Starting
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis-ssl  Started
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis-ssl  Waiting
+... o.s.boot.docker.compose.core.DockerCli   :  Container redis-ssl  Healthy
+...
+... o.example.books.server.BooksApplication  : Started BooksApplication in 2.0 seconds (process running for 2.2)
 ----
 
 NOTE: If the server application is run using any other means (such as an IDE), make sure that the current working directory is the directory containing the `books-server/docker-compose.yml` file so that the Redis server is started automatically.
