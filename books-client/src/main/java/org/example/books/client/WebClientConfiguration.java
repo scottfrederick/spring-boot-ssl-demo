@@ -32,7 +32,7 @@ public class WebClientConfiguration {
 	}
 
 	@Bean
-	@Profile("ssl")
+	@Profile("!default")
 	public WebClient sslWebClient(WebClient.Builder builder, WebClientSsl ssl, AppProperties app) {
 		return builder.baseUrl(app.getServerBaseUrl()).apply(ssl.fromBundle(app.getSsl().getBundle())).build();
 	}

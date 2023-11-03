@@ -34,7 +34,7 @@ public class RestTemplateConfiguration {
 	}
 
 	@Bean
-	@Profile("ssl")
+	@Profile("!default")
 	public RestTemplate sslRestTemplate(RestTemplateBuilder builder, SslBundles sslBundles, AppProperties app) {
 		SslBundle sslBundle = sslBundles.getBundle(app.getSsl().getBundle());
 		return builder.rootUri(app.getServerBaseUrl()).setSslBundle(sslBundle).build();
