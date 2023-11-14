@@ -44,3 +44,45 @@ server:
     bundle: "web"
     client-auth: NEED
 
+---
+spring:
+  config:
+    activate:
+      on-profile: "gcp-ssl-properties"
+    import: "sm://"
+  ssl:
+    bundle:
+      pem:
+        web:
+          keystore:
+            certificate: "${sm://web-server-cert/latest}"
+            private-key: "${sm://web-server-key/latest}"
+          truststore:
+            certificate: "${sm://ca-cert/latest}"
+
+server:
+  port: 8443
+  ssl:
+    bundle: "web"
+    client-auth: NEED
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "gcp-ssl"
+  ssl:
+    bundle:
+      pem:
+        web:
+          keystore:
+            certificate: "gcp:sm://web-server-cert/latest"
+            private-key: "gcp:sm://web-server-key/latest"
+          truststore:
+            certificate: "gcp:sm://ca-cert/latest"
+
+server:
+  port: 8443
+  ssl:
+    bundle: "web"
+    client-auth: NEED

@@ -26,3 +26,44 @@ app:
   server-base-url: "https://localhost:8443"
   ssl:
     bundle: "web"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "gcp-ssl-properties"
+    import: "sm://"
+  ssl:
+    bundle:
+      pem:
+        web:
+          keystore:
+            certificate: "${sm://web-client-cert/latest}"
+            private-key: "${sm://web-client-key/latest}"
+          truststore:
+            certificate: "${sm://ca-cert/latest}"
+
+app:
+  server-base-url: "https://localhost:8443"
+  ssl:
+    bundle: "web"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "gcp-ssl"
+  ssl:
+    bundle:
+      pem:
+        web:
+          keystore:
+            certificate: "gcp:sm://web-client-cert/latest"
+            private-key: "gcp:sm://web-client-key/latest"
+          truststore:
+            certificate: "gcp:sm://ca-cert/latest"
+
+app:
+  server-base-url: "https://localhost:8443"
+  ssl:
+    bundle: "web"
