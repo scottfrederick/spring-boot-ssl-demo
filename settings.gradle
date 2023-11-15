@@ -10,5 +10,6 @@ pluginManagement {
 rootProject.name = 'spring-boot-ssl-demo'
 
 include 'gcp-resource'
+include 'vault-resource'
 include 'books-server'
 include 'books-client'

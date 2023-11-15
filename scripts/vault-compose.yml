@@ -1,0 +1,21 @@
+services:
+  vault-server:
+    image: hashicorp/vault:latest
+    ports:
+      - "8200:8200"
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_ADDR: "http://0.0.0.0:8200"
+      VAULT_DEV_ROOT_TOKEN_ID: "root-token"
+    networks:
+      vault-network:
+        ipv4_address: 172.21.0.10
+        aliases:
+          - vault-server
+
+networks:
+  vault-network:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24

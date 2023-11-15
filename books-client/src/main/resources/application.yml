@@ -67,3 +67,27 @@ app:
   server-base-url: "https://localhost:8443"
   ssl:
     bundle: "web"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "vault-ssl"
+  cloud:
+    vault:
+      uri: "http://localhost:8200"
+      token: "root-token"
+  ssl:
+    bundle:
+      pem:
+        web:
+          keystore:
+            certificate: "vault-kv:certs:web-client:certificate"
+            private-key: "vault-kv:certs:web-client:private-key"
+          truststore:
+            certificate: "vault-kv:certs:ca:certificate"
+
+app:
+  server-base-url: "https://localhost:8443"
+  ssl:
+    bundle: "web"

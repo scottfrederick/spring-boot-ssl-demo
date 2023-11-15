@@ -86,3 +86,28 @@ server:
   ssl:
     bundle: "web"
     client-auth: NEED
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "vault-ssl"
+  cloud:
+    vault:
+      uri: "http://localhost:8200"
+      token: "root-token"
+  ssl:
+    bundle:
+      pem:
+        web:
+          keystore:
+            certificate: "vault-kv:certs:web-server:certificate"
+            private-key: "vault-kv:certs:web-server:private-key"
+          truststore:
+            certificate: "vault-kv:certs:ca:certificate"
+
+server:
+  port: 8443
+  ssl:
+    bundle: "web"
+    client-auth: NEED
