@@ -1,9 +1,7 @@
-version: "3"
-
 services:
   redis:
     profiles: [ "default" ]
-    image: "docker.io/bitnami/redis:7.0"
+    image: "docker.io/bitnami/redis:7.2.5"
     container_name: "redis"
     environment:
       - "ALLOW_EMPTY_PASSWORD=yes"
@@ -11,7 +9,7 @@ services:
       - "6379:6379"
   redis-ssl:
     profiles: [ "ssl" ]
-    image: "docker.io/bitnami/redis:7.0"
+    image: "docker.io/bitnami/redis:7.2.5"
     container_name: "redis-ssl"
     volumes:
       - "../redis/redis-server-certs:/opt/bitnami/redis/certs"
