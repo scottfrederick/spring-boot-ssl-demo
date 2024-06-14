@@ -18,6 +18,7 @@ package org.example.books.client;
 
 import java.util.List;
 
+import org.springframework.web.client.RestClient;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.CommandLineRunner;
@@ -42,9 +43,10 @@ public class BooksClientApplication {
 	}
 
 	@Bean
-	public CommandLineRunner run(RestTemplate restTemplate, WebClient webClient) {
+	public CommandLineRunner run(RestTemplate restTemplate, RestClient restClient, WebClient webClient) {
 		return args -> {
 			retrieveWithRestTemplate(restTemplate);
+			retrieveWithRestClient(restClient);
 			retrieveWithWebClient(webClient);
 		};
 	}
@@ -54,15 +56,34 @@ public class BooksClientApplication {
 		System.out.println("Attempting to connect to server with RestTemplate");
 		try {
 			ResponseEntity<List<Book>> response = restTemplate.exchange("/api/books",
-					HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+					HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+					});
 			List<Book> books = response.getBody();
 			System.out.println();
 			System.out.println("Successfully connected to server with RestTemplate and received response:");
 			System.out.println(StringUtils.collectionToDelimitedString(books, "\n"));
 		} catch (Exception ex) {
 			System.out.println();
-			System.out.println("Error connecting to server: " + ex.getMessage());
+			System.out.println("Error connecting to server with RestTemplate: " + ex.getMessage());
 		}
+	}
+
+	private void retrieveWithRestClient(RestClient webClient) {
+		System.out.println();
+		System.out.println("Attempting to connect to server with RestClient");
+		try {
+			List<Book> books = webClient.get()
+					.uri("/api/books")
+					.retrieve().body(new ParameterizedTypeReference<>() {
+					});
+			System.out.println();
+			System.out.println("Successfully connected to server with RestClient and received response:");
+			System.out.println(StringUtils.collectionToDelimitedString(books, "\n"));
+		} catch (Exception ex) {
+			System.out.println();
+			System.out.println("Error connecting to server with RestClient: " + ex.getMessage());
+		}
+
 	}
 
 	private void retrieveWithWebClient(WebClient webClient) {
@@ -73,7 +94,8 @@ public class BooksClientApplication {
 					.uri("/api/books")
 					.exchangeToMono((response) -> {
 						if (response.statusCode().equals(HttpStatus.OK)) {
-							return response.bodyToMono(new ParameterizedTypeReference<>() {});
+							return response.bodyToMono(new ParameterizedTypeReference<>() {
+							});
 						} else {
 							return response.createError();
 						}
@@ -84,7 +106,7 @@ public class BooksClientApplication {
 			System.out.println(StringUtils.collectionToDelimitedString(books, "\n"));
 		} catch (Exception ex) {
 			System.out.println();
-			System.out.println("Error connecting to server: " + ex.getMessage());
+			System.out.println("Error connecting to server with WebClient: " + ex.getMessage());
 		}
 
 	}
