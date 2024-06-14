@@ -1,4 +1,4 @@
-:spring-boot-docs: https://docs.spring.io/spring-boot/docs/3.1.x/reference/htmlsingle
+:spring-boot-docs: https://docs.spring.io/spring-boot
 
 = Securing Spring Boot applications with SSL/TLS
 :toc:
@@ -17,7 +17,7 @@ Each REST client is used to call the server endpoint and print the results to `s
 
 === Docker Compose
 
-When running the server application locally, a Redis server will be started automatically using {spring-boot-docs}/#features.docker-compose[Spring Boot's support for Docker Compose].
+When running the server application locally, a Redis server will be started automatically using {spring-boot-docs}/reference/features/dev-services.html#features.dev-services.docker-compose[Spring Boot's support for Docker Compose].
 
 The included link:books-server/docker-compose.yml[Docker Compose file] uses https://docs.docker.com/compose/profiles/[Docker Compose profiles] to start the Redis server without or with SSL configuration using `default` and `ssl` profiles.
 Docker Compose profiles are similar to Spring Boot profiles, but they work independently of each other.
@@ -25,7 +25,7 @@ Docker Compose profiles are similar to Spring Boot profiles, but they work indep
 === SSL Bundles
 
 Secure SSL connections are configured for communication between the server application and Redis, and between the client and server applications.
-In the Spring Boot applications, this is done using the {spring-boot-docs}/#features.ssl[SSL bundles feature] to load and apply PEM certificates.
+In the Spring Boot applications, this is done using the {spring-boot-docs}/reference/features/ssl.html[SSL bundles feature] to load and apply PEM certificates.
 
 For the `books-server` application, SSL bundles are defined and applied using link:books-server/src/main/resources/application.yml[properties in the `application.yml` file] to configure the Redis client connection and the web server.
 The web server is also configured to require client authentication.
