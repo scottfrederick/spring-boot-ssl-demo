@@ -11,7 +11,7 @@ There are two applications named `books-server` and `books-client` in this sampl
 
 The server application is a web server providing a REST endpoint `/api/books` that returns a list of books from Redis using Spring Data Redis.
 
-The client application configures a `RestTemplate` and a `WebClient` for communicating with the server.
+The client application configures a `RestTemplate`, a `RestClient`, and a `WebClient` for communicating with the server.
 This is done to show the SSL configuration for both types of REST clients.
 Each REST client is used to call the server endpoint and print the results to `stdout`.
 
@@ -30,7 +30,7 @@ In the Spring Boot applications, this is done using the {spring-boot-docs}/#feat
 For the `books-server` application, SSL bundles are defined and applied using link:books-server/src/main/resources/application.yml[properties in the `application.yml` file] to configure the Redis client connection and the web server.
 The web server is also configured to require client authentication.
 
-For the `books-client` application, an SSL bundle is defined using link:books-client/src/main/resources/application.yml[properties in the `application.yml` file] and applied by customizing the link:books-client/src/main/java/org/example/books/client/RestTemplateConfiguration.java[`RestTemplate`] and link:books-client/src/main/java/org/example/books/client/WebClientConfiguration.java[`WebClient`] using Spring Boot APIs.
+For the `books-client` application, an SSL bundle is defined using link:books-client/src/main/resources/application.yml[properties in the `application.yml` file] and applied by customizing the link:books-client/src/main/java/org/example/books/client/RestTemplateConfiguration.java[`RestTemplate`], link:books-client/src/main/java/org/example/books/client/RestClientConfiguration.java[`RestClient`], and link:books-client/src/main/java/org/example/books/client/WebClientConfiguration.java[`WebClient`] using Spring Boot APIs.
 
 == Running the Sample Locally Without SSL
 
@@ -75,6 +75,13 @@ The client application should start, with output similar to the following:
 Attempting to connect to server with RestTemplate
 
 Successfully connected to server with RestTemplate and received response:
+Book[...]
+Book[...]
+...
+
+Attempting to connect to server with RestClient
+
+Successfully connected to server with RestClient and received response:
 Book[...]
 Book[...]
 ...
@@ -141,6 +148,13 @@ The client application should start, with output similar to the following:
 Attempting to connect to server with RestTemplate
 
 Successfully connected to server with RestTemplate and received response:
+Book[...]
+Book[...]
+...
+
+Attempting to connect to server with RestClient
+
+Successfully connected to server with RestClient and received response:
 Book[...]
 Book[...]
 ...
