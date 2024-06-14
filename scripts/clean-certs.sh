@@ -1,6 +1,7 @@
 #!/bin/bash
 
 rm certs/*
-rm redis/certs/*
-rm books-server/src/main/resources/certs/*
-rm books-client/src/main/resources/certs/*
+rm redis/redis-server-certs/*
+rm books-server/src/main/resources/redis-client-certs/*
+rm books-server/src/main/resources/web-server-certs/*
+rm books-client/src/main/resources/web-client-certs/*

@@ -4,14 +4,16 @@ create_ssl_config() {
   mkdir -p certs
 
   cat > certs/openssl.cnf <<_END_
-  subjectAltName = @alt_names
   [alt_names]
   DNS.1 = example.com
   DNS.2 = localhost
+  IP.1 = 127.0.0.1
   [ server_cert ]
+  subjectAltName = @alt_names
   keyUsage = digitalSignature, keyEncipherment
   nsCertType = server
   [ client_cert ]
+  subjectAltName = @alt_names
   keyUsage = digitalSignature, keyEncipherment
   nsCertType = client
 _END_
