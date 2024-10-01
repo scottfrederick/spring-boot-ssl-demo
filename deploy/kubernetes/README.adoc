@@ -10,7 +10,7 @@ All commands in these instructions should be run from the root of the project.
 These instructions have been developed and tested using https://kind.sigs.k8s.io/[kind] with a https://kind.sigs.k8s.io/docs/user/local-registry/[local OCI image registry] and https://kind.sigs.k8s.io/docs/user/ingress/[ingress] configured.
 Other Kubernetes cluster are likely to work also.
 
-To use an OCI image registry other than a local registry in the cluster (with a registry address `localhost:5001`), you will need to modify the repository in the `build.gradle` files for the link:../../books-server/build.gradle[`books-server`] and link:../../books-client/build.gradle[`books-client`] subprojects.
+To use an OCI image registry other than a local registry in the cluster (with a registry address `localhost:5001`), you will need to modify the repository in the `build.gradle.kts` files for the link:../../books-server/build.gradle.kts[`books-server`] and link:../../books-client/build.gradle.kts[`books-client`] subprojects.
 
 For simplicity, everything is deployed to the default namespace.
 
