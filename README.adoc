@@ -12,7 +12,7 @@ There are two applications named `books-server` and `books-client` in this sampl
 The server application is a web server providing a REST endpoint `/api/books` that returns a list of books from Redis using Spring Data Redis.
 
 The client application configures a `RestTemplate`, a `RestClient`, and a `WebClient` for communicating with the server.
-This is done to show the SSL configuration for both types of REST clients.
+This is done to show the SSL configuration for all types of REST clients.
 Each REST client is used to call the server endpoint and print the results to `stdout`.
 
 === Docker Compose
