@@ -23,5 +23,9 @@ services:
       --tls-key-file /redis-certs/tls.key
       --tls-ca-cert-file /redis-certs/ca.crt
       --protected-mode no
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.keystore.certificate=classpath:redis-client-certs/tls.crt'
+      - 'org.springframework.boot.sslbundle.pem.keystore.private-key=classpath:redis-client-certs/tls.key'
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=classpath:redis-client-certs/ca.crt'
     ports:
       - "6379:6379"
